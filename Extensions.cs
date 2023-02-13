@@ -8,7 +8,7 @@ namespace Transaction.Api
 	{
 		public static TransactionDto AsDto(this Transactions ItemDto)
 		{
-			return new TransactionDto(ItemDto.Id, ItemDto.NameOfMerchant, ItemDto.Price, ItemDto.CreatedTime);
+			return new TransactionDto(ItemDto.Id, ItemDto.NameOfMerchant, ItemDto.Price, ItemDto.CreatedTime, ItemDto.StoreId, ItemDto.Status);
 		}
 	}
 }

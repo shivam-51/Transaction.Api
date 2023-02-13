@@ -8,9 +8,9 @@ namespace Transaction.Api.Entities
 
         public string? Port { get; set; }
 
-        public string DatabaseName => "dotnet";
+        public string DatabaseName { get; set; } = null!;
 
-        public string ConnectionString => $"mongodb://{this.Host}";
+        public string ConnectionString => $"mongodb+srv://{this.Host}";
         //public string ConnectionString { get; set; } = null!;
     }
 }

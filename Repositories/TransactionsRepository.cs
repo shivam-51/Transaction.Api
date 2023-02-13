@@ -3,10 +3,12 @@ using System.Collections;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Transaction.Api.Entities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Transaction.Api.Repositories
 {
-    public class MongoRepository<T> : IRepository<T> where T: IEntity
+    public class MongoRepository<T> : IRepository<T> where T: Transactions
     {
         private readonly IMongoCollection<T> dbCollection;
 
@@ -15,31 +17,36 @@ namespace Transaction.Api.Repositories
         public MongoRepository(
         IMongoDatabase mongoDatabase, string collectionName)
         {
-            //const string collectionName = "items";
-            //Console.WriteLine(mongoDbSettings.Value.Host);
-            //Console.WriteLine(mongoDbSettings.Value.Port);
-            //var mongoClient = new MongoClient(
-            //    mongoDbSettings.Value.ConnectionString);
-
-            //var mongoDatabase = mongoClient.GetDatabase(
-            //    mongoDbSettings.Value.DatabaseName);
-
             dbCollection = mongoDatabase.GetCollection<T>(collectionName);
         }
 
-        public async Task<IReadOnlyCollection<T>> GetAllAsync()
+        public async Task<IReadOnlyCollection<T>> GetAllAsync(PagingParams pagingParams)
         {
-            var items = await dbCollection.Find(filterBuilder.Empty).ToListAsync();
-            Console.WriteLine(items);
+            // var filter = filterBuilder.And(
+            //     filterBuilder.Eq("NameOfMerchant", "Flipkart")
+            // );
+
+            var items = await dbCollection.Find(filterBuilder.Empty).Skip((pagingParams.PageNumber - 1)*pagingParams.PageSize).Limit(pagingParams.PageSize).ToListAsync();
+
             return items;
         }
 
-        // public async Task<T> GetAsync(Guid id)
-        // {
-        //     FilterDefinition<T> filter = filterBuilder.Eq(entity => entity.Id, id);
+        public async Task<IReadOnlyCollection<T>> GetWithFilters(PagingParams pagingParams, QueryParams queryParams)
+        {
+            var filter = Builders<T>.Filter.Where(x => 
+            (x.StoreId == queryParams.StoreId || queryParams.StoreId == Guid.Empty) 
+            && (x.NameOfMerchant == queryParams.NameOfMerchant || queryParams.NameOfMerchant == "") 
+            && (x.Status == queryParams.Status || queryParams.Status == Status.Other) 
+            && (x.Price >= queryParams.PriceFrom || queryParams.PriceFrom == Decimal.MinValue) 
+            && (x.Price <= queryParams.PriceTo || queryParams.PriceTo == Decimal.MaxValue) 
+            && (x.CreatedTime >= queryParams.FromDate || queryParams.FromDate == DateTime.MinValue) 
+            && (x.CreatedTime <= queryParams.ToDate || queryParams.ToDate == DateTime.MaxValue));
+            
+            var items = await dbCollection.Find(filter).Skip((pagingParams.PageNumber - 1)*pagingParams.PageSize).Limit(pagingParams.PageSize).ToListAsync();
 
-        //     return await dbCollection.Find(filter).SingleOrDefaultAsync();
-        // }
+            return items;
+        }
+
 
         public async Task CreateAsync(T entity)
         {
