@@ -1,0 +1,45 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: transaction-service
+  labels:
+    app: transaction-service
+spec:
+  selector:
+    app: transaction-service
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 3000
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transaction-service
+  labels:
+    app: transaction-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: transaction-service
+  template:
+    metadata:
+      labels:
+        app: transaction-service
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "transaction-service"
+        dapr.io/app-port: "3000"
+    spec:
+      containers:
+      - name: transaction-service
+        image: contentacr.azurecr.io/transaction-service:v1
+        env:
+        - name: ASPNETCORE_URLS
+          value: "http://*:3000"
+        ports:
+        - containerPort: 3000
+        imagePullPolicy: Always

@@ -29,9 +29,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseHttpsRedirection();
 app.UseAuthorization();
 
-app.MapControllers();
+var loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
+var logger = loggerFactory.CreateLogger("event-processor");
 
+app.MapControllers();
+app.MapGet("/health", async (HttpContext context) =>{
+     logger.LogInformation("Running health check."); 
+     await context.Response.WriteAsync("Running");}
+);
 app.Run();
