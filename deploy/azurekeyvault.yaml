@@ -1,0 +1,21 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: azurekeyvault
+  namespace: default
+spec:
+  type: secretstores.azure.keyvault
+  version: v1
+  metadata:
+  - name: vaultName
+    value: "keyvault-singhshivam"
+  - name: azureTenantId
+    value: "16b3c013-d300-468d-ac64-7eda0820b6d3"
+  - name: azureClientId
+    value: "9e43412b-225a-4e6d-abc9-e0c10c60e5ec"
+  - name: azureClientSecret
+    secretKeyRef:
+      name: "kubernetes-secret-name"
+      key: "kubernetes-secret-key"
+auth:
+  secretStore: kubernetes

@@ -36,7 +36,7 @@ spec:
     spec:
       containers:
       - name: transaction-service
-        image: contentacr.azurecr.io/transaction-service:v1
+        image: contentacr.azurecr.io/transaction-service:v2
         env:
         - name: ASPNETCORE_URLS
           value: "http://*:3000"

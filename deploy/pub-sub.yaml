@@ -1,0 +1,29 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: servicebus-pubsub
+  namespace: default
+spec:
+  type: pubsub.azure.servicebus.topics
+  version: v1
+  metadata:
+  - name: connectionString # Required when not using Azure Authentication.
+    value: "Endpoint=sb://servicebusdapr.servicebus.windows.net/;SharedAccessKeyName=sharedaccesskey;SharedAccessKey=ziV5yR3XKDbbbIbWmN5MJIKWBdtRpVOhu+ASbJlh51I=;EntityPath=daprtopic"
+# spec:
+#   type: pubsub.azure.servicebus.topics
+#   version: v1
+#   metadata:
+#   - name: azureTenantId
+#     value: "16b3c013-d300-468d-ac64-7eda0820b6d3"
+#   - name: azureClientId
+#     value: "9e43412b-225a-4e6d-abc9-e0c10c60e5ec"
+#   - name: azureClientSecret
+#     value: "D.V8Q~sUSBm1r-CN6KBBkCLwaQR5kiKnye4kyb4Q"
+#   - name: namespaceName
+#     # Required when using Azure Authentication.
+#     # Must be a fully-qualified domain name
+#     value: "servicebusdapr.servicebus.windows.net"
+#   - name: topicName
+#     value: daprtopic
+#   - name: ttlInSeconds
+#     value: 60
